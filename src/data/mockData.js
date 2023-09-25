@@ -1,5 +1,21 @@
 import { tokens } from "../theme";
 
+export const mockDataReport = [
+  {
+    id: 1,
+    userId:1,
+    date: "03/12/2022",
+    description: "FO cut di jalan tol",
+    status: "Submitted",
+    image: "",
+    location: "mabes",
+    assignee: "Syaiful",
+    priority: "low",
+  },
+  
+];
+
+
 export const mockDataTeam = [
   {
     id: 1,

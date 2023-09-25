@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar"; 
-import { Box,IconButton, Typography, useTheme } from "@mui/material";
+import { Box,IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
@@ -8,8 +8,10 @@ import HomeOutlinedIcon  from "@mui/icons-material/LightModeOutlined";
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import PeopleOutlinedIcon  from "@mui/icons-material/PeopleOutlined";
 import ReceiptOutlinedIcon  from "@mui/icons-material/ReceiptOutlined";
+import FeedIcon from '@mui/icons-material/Feed';
 // import BarChartOutlinedIcon  from "@mui/icons-material/BarChartOutlined";
 import MenuOutlinedIcon  from "@mui/icons-material/MenuOutlined";
+import { UploadFileOutlined } from "@mui/icons-material";
 
 const Item = ({ title, to, icon, selected, setSelected}) => {
     const theme = useTheme()
@@ -23,13 +25,14 @@ const Item = ({ title, to, icon, selected, setSelected}) => {
 }
 
 
-const Sidebar = () => {
+const Sidebar = ({userRole}) => {
+    const isMobile = useMediaQuery("(max-width:600px)")
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [selected, setSelected] = useState("Dashboard")
     
-    
+    const shouldCollapseSidebar = isMobile || isCollapsed;
     
     return (
         <Box
@@ -51,18 +54,18 @@ const Sidebar = () => {
                 },
             }} 
         >
-            <ProSidebar collapsed={isCollapsed} >
+            <ProSidebar collapsed={shouldCollapseSidebar} >
                 <Menu iconShape="square">
                     {/* Logo and menu icon */}
                     <MenuItem
                         onClick={()=>setIsCollapsed(!isCollapsed)}
-                        icon={isCollapsed ? <MenuOutlinedIcon/> :undefined}
+                        icon={shouldCollapseSidebar ? <MenuOutlinedIcon/> :undefined}
                         style={{
                             margin: "10px 0 20px 0",
                             color: colors.grey[100],
                         }}
                     >
-                        {!isCollapsed && (
+                        {!shouldCollapseSidebar && (
                             <Box
                                 display="flex"
                                 justifyContent="space-between"
@@ -72,13 +75,13 @@ const Sidebar = () => {
                                 <Typography variant="h3" color={colors.grey[100]}>
                                     ADMIN
                                 </Typography>
-                                <IconButton onClick={()=>setIsCollapsed(!isCollapsed)}>
+                                <IconButton onClick={()=>setIsCollapsed(!shouldCollapseSidebar)}>
                                     <MenuOutlinedIcon/>
                                 </IconButton>
                             </Box>
                         )}
                     </MenuItem>
-                    {!isCollapsed && (
+                    {!shouldCollapseSidebar && (
                         <Box mb="25px">
                             <Box display="flex" justifyContent="center" alignItems="center" >
                                 <img
@@ -105,7 +108,7 @@ const Sidebar = () => {
                         </Box>
                     )}
                     {/* Menu items */}
-                    <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+                    <Box paddingLeft={shouldCollapseSidebar ? undefined : "10%"}>
                         <Item
                             title="Dashboard"
                             to="/"
@@ -113,17 +116,50 @@ const Sidebar = () => {
                             selected={selected}
                             setSelected={setSelected}
                         />
-                        <Item
-                            title="Team"
-                            to="/team"
-                            icon={<PeopleOutlinedIcon/>}
-                            selected={selected}
-                            setSelected={setSelected}
-                        />
+                        {userRole ==="Admin" &&(
+                            <>
+                                {/* Render Admin-specific items */}
+                                <Typography
+                                    variant="h6"
+                                    color={colors.grey[300]}
+                                    sx={{ m: "15px 0 5px 20px" }}
+                                >
+                                    Manage Team
+                                </Typography>
+                                <Item
+                                    title="Team"
+                                    to="/team"
+                                    icon={<PeopleOutlinedIcon/>}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                                <Item
+                                    title="Form"
+                                    to="/form"
+                                    icon={<FeedIcon/>}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                                <Typography
+                                    variant="h6"
+                                    color={colors.grey[300]}
+                                    sx={{ m: "15px 0 5px 20px" }}
+                                >
+                                    Manage work
+                                </Typography>
+                            </>
+                        )}
                         <Item
                             title="Report"
                             to="/report"
                             icon={<ReceiptOutlinedIcon/>}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Item
+                            title="Upload"
+                            to="/report/create"
+                            icon={<UploadFileOutlined/>}
                             selected={selected}
                             setSelected={setSelected}
                         />
