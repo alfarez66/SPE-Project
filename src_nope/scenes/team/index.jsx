@@ -6,7 +6,6 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import SecurityIcon from '@mui/icons-material/Security';
 import Header from "../../components/header";
-import TeamGrid from "../../components/Team";
 
 const Team = () =>{
     const theme = useTheme();
@@ -28,7 +27,7 @@ const Team = () =>{
         //     align:"left",
         // }, 
         {
-            field: "contact", 
+            field: "phone", 
             headerNam:"Phone Number", 
             flex: 1,
         }, 
@@ -56,9 +55,9 @@ const Team = () =>{
                         }
                         borderRadius="4px"
                     >
-                        {access === "Admin" && <AdminPanelSettingsIcon/> }
-                        {access === "Manager" && <SecurityIcon/> }
-                        {access === "User" && <LockOpenIcon/> }
+                        {access === "admin" && <AdminPanelSettingsIcon/> }
+                        {access === "manager" && <SecurityIcon/> }
+                        {access === "user" && <LockOpenIcon/> }
                         <Typography color={colors.grey[100]} sx={{ml: "5px" }}  >
                             {access}
                         </Typography>
@@ -77,9 +76,6 @@ const Team = () =>{
                 sx={{
                     "& .MuiDataGrid-root": {
                         border: "none"
-                    },
-                    "& .MuiButtonBase-root":{
-                        color: colors.grey[400]
                     },
                     "& .MuiDataGrid-cell":{
                         borderBottom:"none"
@@ -100,11 +96,10 @@ const Team = () =>{
                     }
                 }}
             >
-                {/* <DataGrid  
+                <DataGrid  
                     rows={mockDataTeam}
                     columns={columns}
-                /> */}
-                <TeamGrid/>
+                />
             </Box>
         </Box>
     )

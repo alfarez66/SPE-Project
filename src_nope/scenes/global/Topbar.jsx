@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, useTheme } from "@mui/material";
 import { useContext } from "react";
 import { ColorModeContext,tokens } from "../../theme";
 import InputBase from "@mui/material/InputBase";
@@ -7,7 +7,6 @@ import DarkModeOutlinedIcon  from "@mui/icons-material/DarkModeOutlined";
 import NotificationsOutlinedIcon  from "@mui/icons-material/NotificationsOutlined";
 import PersonOutlinedIcon  from "@mui/icons-material/PersonOutlined";
 import SearchIcon  from "@mui/icons-material/Search";
-import LoginIcon from '@mui/icons-material/Login';
 
 const Topbar = () => {
     const theme = useTheme()
@@ -28,20 +27,6 @@ const Topbar = () => {
         </Box>
         {/* ICON SECTION */}
         <Box display="flex">
-            <Button
-                sx={{
-                    backgroundColor: colors.primary[400],
-                    color: colors.grey[100],
-                }}
-                onClick={() => {
-                    window.location.href = "/login";
-                }}
-                >
-                <Typography component="h1" color={colors.grey[100]}>
-                    Login
-                </Typography>
-            </Button>
-
             <IconButton onClick={colorMode.toggleColorMode} >
                 {theme.palette.mode ==='dark' ?(
                     <DarkModeOutlinedIcon />
@@ -49,12 +34,12 @@ const Topbar = () => {
                 <LightModeOutlinedIcon />
                 )}
             </IconButton>
-            {/* <IconButton>
+            <IconButton>
                 <NotificationsOutlinedIcon />
-            </IconButton> */}
-            {/* <IconButton>
+            </IconButton>
+            <IconButton>
                 <PersonOutlinedIcon />
-            </IconButton> */}
+            </IconButton>
         </Box>
     </Box>
     )

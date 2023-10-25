@@ -87,7 +87,7 @@ const Dashboard = () => {
 
             {/* ROW 2 */}
             <Box
-            gridColumn="span 12"
+            gridColumn="span 8"
             gridRow="span 2"
             backgroundColor={colors.primary[400]}
             >
@@ -126,7 +126,7 @@ const Dashboard = () => {
                 <LineChart isDashboard={true} />
             </Box>
             </Box>
-            {/* <Box
+            <Box
             gridColumn="span 4"
             gridRow="span 2"
             backgroundColor={colors.primary[400]}
@@ -175,10 +175,10 @@ const Dashboard = () => {
                 </Box>
                 </Box>
             ))}
-            </Box> */}
+            </Box>
 
             {/* ROW 3 */}
-            {/* <Box
+            <Box
             gridColumn="span 6"
             gridRow="span 2"
             backgroundColor={colors.primary[400]}
@@ -203,9 +203,9 @@ const Dashboard = () => {
                 </Typography>
                 <Typography>Includes extra misc expenditures and costs</Typography>
             </Box>
-            </Box> */}
+            </Box>
             <Box
-            gridColumn="span 12"
+            gridColumn="span 6"
             gridRow="span 2"
             backgroundColor={colors.primary[400]}
             >

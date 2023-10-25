@@ -5,9 +5,11 @@ import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon  from "@mui/icons-material/LightModeOutlined";
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import PeopleOutlinedIcon  from "@mui/icons-material/PeopleOutlined";
 import ReceiptOutlinedIcon  from "@mui/icons-material/ReceiptOutlined";
 import FeedIcon from '@mui/icons-material/Feed';
+// import BarChartOutlinedIcon  from "@mui/icons-material/BarChartOutlined";
 import MenuOutlinedIcon  from "@mui/icons-material/MenuOutlined";
 import { UploadFileOutlined } from "@mui/icons-material";
 
@@ -23,7 +25,7 @@ const Item = ({ title, to, icon, selected, setSelected}) => {
 }
 
 
-const Sidebar = ({userRole , userName = "Guest",}) => {
+const Sidebar = ({userRole}) => {
     const isMobile = useMediaQuery("(max-width:600px)")
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
@@ -32,10 +34,6 @@ const Sidebar = ({userRole , userName = "Guest",}) => {
     
     const shouldCollapseSidebar = isMobile || isCollapsed;
     
-    const isAdmin = userRole === "Admin"
-    const isUser = userRole === "User"
-    const isGuest = userRole === "Guest"
-
     return (
         <Box
             sx={{
@@ -74,21 +72,9 @@ const Sidebar = ({userRole , userName = "Guest",}) => {
                                 alignItems="center"
                                 ml="15px"
                             >
-                                {isAdmin &&(
                                 <Typography variant="h3" color={colors.grey[100]}>
                                     ADMIN
                                 </Typography>
-                                )}
-                                {isUser &&(
-                                <Typography variant="h3" color={colors.grey[100]}>
-                                    USER
-                                </Typography>
-                                )}
-                                {isGuest &&(
-                                <Typography variant="h3" color={colors.grey[100]}>
-                                    GUEST
-                                </Typography>
-                                )}
                                 <IconButton onClick={()=>setIsCollapsed(!shouldCollapseSidebar)}>
                                     <MenuOutlinedIcon/>
                                 </IconButton>
@@ -113,10 +99,10 @@ const Sidebar = ({userRole , userName = "Guest",}) => {
                                 fontWeight="bold" 
                                 sx={{ m: "10px 0 0 0"}} 
                                 >
-                                    {userName}
+                                    [Admin Name]
                                 </Typography>
                                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                                    {userRole}
+                                    Admin role
                                 </Typography>
                             </Box>
                         </Box>
@@ -130,7 +116,7 @@ const Sidebar = ({userRole , userName = "Guest",}) => {
                             selected={selected}
                             setSelected={setSelected}
                         />
-                        {isAdmin &&(
+                        {userRole ==="Admin" &&(
                             <>
                                 {/* Render Admin-specific items */}
                                 <Typography
@@ -163,31 +149,27 @@ const Sidebar = ({userRole , userName = "Guest",}) => {
                                 </Typography>
                             </>
                         )}
-                        {(isAdmin || isUser ) &&(
-                            <>
-                            <Item
-                                title="Report"
-                                to="/report"
-                                icon={<ReceiptOutlinedIcon/>}
-                                selected={selected}
-                                setSelected={setSelected}
-                            />
-                            <Item
-                                title="Upload"
-                                to="/report/create"
-                                icon={<UploadFileOutlined/>}
-                                selected={selected}
-                                setSelected={setSelected}
-                            />
-                            {/* <Item
-                                title="Monitoring"
-                                to="/monitor"
-                                icon={<MonitorHeartIcon/>}
-                                selected={selected}
-                                setSelected={setSelected}
-                            /> */}
-                            </>
-                        )}
+                        <Item
+                            title="Report"
+                            to="/report"
+                            icon={<ReceiptOutlinedIcon/>}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Item
+                            title="Upload"
+                            to="/report/create"
+                            icon={<UploadFileOutlined/>}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Item
+                            title="Monitoring"
+                            to="/monitor"
+                            icon={<MonitorHeartIcon/>}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
                     </Box>
                 </Menu>
             </ProSidebar>
