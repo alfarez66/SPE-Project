@@ -10,11 +10,96 @@ import Header from "../../components/header";
 import LineChart from "../../components/LineChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
+import PersonIcon from '@mui/icons-material/Person';
 import ProgressCircle from "../../components/ProgressCircle";
+import axios from "../../api/axios";
+import { useState } from "react";
+import { useEffect } from "react";
+import averagedData from "../../data/realData";
+
 
 const Dashboard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    
+    const [completenessScore, setScore] = useState(0);
+    const [userCount, setUserCount] = useState(0);
+    const [userGainThisMonth, setUserGainThisMonth] = useState('');
+    const [reportSent, setReportSent] = useState(0);
+    const [reportSentThisMonth, setReportSentThisMonth] = useState('');
+    const [lineData, setLineData] = useState([]); // Define lineData state
+
+    const [userData, setUserData] = useState({
+        labels: averagedData.map((data) => data.month),
+        datasets: [
+        {
+            label: "Completeness Score",
+            data: averagedData.map((data) => data.averageScore),
+            backgroundColor: [
+            "rgba(75,192,192,1)",
+            "#ecf0f1",
+            "#50AF95",
+            "#f3ba2f",
+            "#2a71d0",
+            ],
+            borderColor: "black",
+            borderWidth: 2,
+        },
+        ],
+    });
+
+    useEffect(() => {
+        // Fetch data from backend endpoints
+
+        
+        const overallScore = averagedData.reduce(
+            (totalScore, monthData) => totalScore + monthData.averageScore,
+            0
+        );
+        const totalMonths = averagedData.length;
+        const overallAverageScore = overallScore / totalMonths;
+        setScore(overallAverageScore);
+
+        axios.get('/completeness_scores')
+            .then(response => {
+                setLineData(response.data); // Update lineData state with the fetched data
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        axios.get('/users/count')
+            .then(response => {
+                setUserCount(response.data.usersCount);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        axios.get('/users/newThisMonth')
+            .then(response => {
+                setUserGainThisMonth(response.data.newUsersThisMonth);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        axios.get('/reports/count')
+            .then(response => {
+                setReportSent(response.data.reportsCount);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        axios.get('/reports/newThisMonth')
+            .then(response => {
+                setReportSentThisMonth(response.data.newReportsThisMonth);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }, []);
 
     return (
         <Box m="20px">
@@ -23,7 +108,7 @@ const Dashboard = () => {
             <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
 
             <Box>
-            <Button
+            {/* <Button
                 sx={{
                 backgroundColor: colors.blueAccent[700],
                 color: colors.grey[100],
@@ -34,7 +119,7 @@ const Dashboard = () => {
             >
                 <DownloadOutlinedIcon sx={{ mr: "10px" }} />
                 Download Reports
-            </Button>
+            </Button> */}
             </Box>
         </Box>
 
@@ -54,10 +139,10 @@ const Dashboard = () => {
             justifyContent="center"
             >
             <StatBox
-                title="12,361"
-                subtitle="Emails Sent"
+                title={reportSent}
+                subtitle="Reports Sent This Month"
                 progress="0.75"
-                increase="+14%"
+                increase={`+${reportSentThisMonth}`}
                 icon={
                 <EmailIcon
                     sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -73,13 +158,13 @@ const Dashboard = () => {
             justifyContent="center"
             >
             <StatBox
-                title="431,225"
-                subtitle="Sales Obtained"
+                title={userCount}
+                subtitle="User Gain This Month"
                 progress="0.50"
-                increase="+21%"
+                increase={`+${userGainThisMonth}`}
                 icon={
-                <PointOfSaleIcon
-                    sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+                <PersonIcon
+                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
                 />
                 }
             />
@@ -104,14 +189,14 @@ const Dashboard = () => {
                     fontWeight="600"
                     color={colors.grey[100]}
                 >
-                    Revenue Generated
+                    Overal score
                 </Typography>
                 <Typography
                     variant="h3"
                     fontWeight="bold"
                     color={colors.greenAccent[500]}
                 >
-                    $59,342.32
+                    {`${(completenessScore*100).toFixed(2)}%`}
                 </Typography>
                 </Box>
                 <Box>
@@ -122,8 +207,10 @@ const Dashboard = () => {
                 </IconButton>
                 </Box>
             </Box>
-            <Box height="250px" m="-20px 0 0 0">
-                <LineChart isDashboard={true} />
+            <Box gridColumn="span 12" gridRow="span 2" backgroundColor={colors.primary[400]} className="LineChartContainer">
+                <Box height="250px">
+                    <LineChart chartData={userData} />
+                </Box>
             </Box>
             </Box>
             {/* <Box
@@ -204,7 +291,7 @@ const Dashboard = () => {
                 <Typography>Includes extra misc expenditures and costs</Typography>
             </Box>
             </Box> */}
-            <Box
+            {/* <Box
             gridColumn="span 12"
             gridRow="span 2"
             backgroundColor={colors.primary[400]}
@@ -219,7 +306,7 @@ const Dashboard = () => {
             <Box height="250px" mt="-20px">
                 <BarChart isDashboard={true} />
             </Box>
-            </Box>
+            </Box> */}
         </Box>
         </Box>
     );

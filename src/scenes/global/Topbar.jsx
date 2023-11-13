@@ -8,11 +8,38 @@ import NotificationsOutlinedIcon  from "@mui/icons-material/NotificationsOutline
 import PersonOutlinedIcon  from "@mui/icons-material/PersonOutlined";
 import SearchIcon  from "@mui/icons-material/Search";
 import LoginIcon from '@mui/icons-material/Login';
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+// import Cookies from "universal-cookie";
+import { useCookies } from "react-cookie";
+import { useEffect } from "react";
 
 const Topbar = () => {
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
     const colorMode = useContext(ColorModeContext)
+    const navigate = useNavigate()
+
+    const [cookies, setCookie, removeCookie] = useCookies(["jwt"]);
+
+    const [ authenticated, setAuthenticated] = useState(!!cookies.jwt)
+    // console.log(cookies.get("jwt"))
+    
+
+    useEffect(()=>{
+        setAuthenticated(!!cookies.jwt)
+    },[cookies])
+
+    const handleLoginClick = () => {
+        if(authenticated){
+            removeCookie('jwt')
+            setAuthenticated(false);
+            navigate("/")
+            window.location.reload()
+        }else {
+            navigate("/login");
+        }
+    }
 
     return (<Box display="flex" justifyContent="space-between" p={2}>
         {/* Search Bar */}
@@ -21,10 +48,10 @@ const Topbar = () => {
         backgroundColor={colors.primary[400]} 
         borderRadius="3px" 
         >
-            <InputBase sx={{ml:2, flex:1 }} placeholder="Search" />
+            {/* <InputBase sx={{ml:2, flex:1 }} placeholder="Search" />
             <IconButton type="button" sx={{ p:1 }} >
                 <SearchIcon />
-            </IconButton>
+            </IconButton> */}
         </Box>
         {/* ICON SECTION */}
         <Box display="flex">
@@ -33,12 +60,10 @@ const Topbar = () => {
                     backgroundColor: colors.primary[400],
                     color: colors.grey[100],
                 }}
-                onClick={() => {
-                    window.location.href = "/login";
-                }}
+                onClick={handleLoginClick}
                 >
                 <Typography component="h1" color={colors.grey[100]}>
-                    Login
+                    {authenticated ? "Logout":"Login"}
                 </Typography>
             </Button>
 

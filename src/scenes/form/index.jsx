@@ -176,7 +176,8 @@ import { Formik } from "formik";
 import * as yup from "yup"
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/header";
-import axios from "axios";
+import axios from "../../api/axios";
+// import axios from "axios";
 
 const initialValues = {
     // reportId: "",
@@ -235,7 +236,7 @@ const Upload = ()=>{
             formData.append('password', values.password)
             formData.append('access', values.access)
             
-            const response = await axios.post("http://localhost:5000/inputUser", formData,{
+            const response = await axios.post("/inputUser", formData,{
                 // set the content type for FormData
                 headers:{'Content-Type':'multipart/form-data'},
             });
@@ -257,7 +258,7 @@ const Upload = ()=>{
     }
     return (
         <Box m="20px" >
-            <Header title="CREATE REPORT" subtitle="Create a New Report" />
+            <Header title="CREATE USER" subtitle="Create a New USER" />
             <Formik
                 onSubmit={handleFormSubmit}
                 initialValues={initialValues}
@@ -374,7 +375,7 @@ const Upload = ()=>{
                         </Box>
                         <Box display="flex" justifyContent="end" mt="20px" >
                             <Button type="submit" color="secondary" variant="contained" >
-                                Create Report
+                                Create User
                             </Button>
                         </Box>
                     </form>

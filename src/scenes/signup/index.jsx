@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Field, Formik } from 'formik';
 import { FormControl, MenuItem, Select, useMediaQuery } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // function Copyright(props) {
 // return (
@@ -34,6 +35,7 @@ import axios from 'axios';
 // const defaultTheme = createTheme();
 
 export default function SignUp() {
+    const navigate = useNavigate()
 const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -79,7 +81,7 @@ const handleFormSubmit = async ( values)=>{
             //success
             console.log("success")
             console.log("Report details:", response.data)
-
+            navigate('/')
         } else {
             //error
             console.error('Error',response.status)

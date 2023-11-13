@@ -90,53 +90,62 @@ function TeamGrid() {
     }, []);
     
 
+    // Update user based on email
     const onSaveRow = (id, updatedRow, oldRow, oldRows) => {
-        fetch('http://localhost:3001/updateReport',{
-            method: 'PUT',
-            headers:{
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                reportId: id,
-                ...updatedRow,
-            }),
-        })
-        .then((response)=>response.json())
-        .then((data) =>{
-            // update the state of the component and compare the changes.
-            setRows(oldRows.map((r) => (r.reportId === id ? {...data} : r )))
-        })
-        .catch((err) => {
-            console.log(err)
-            alert('Failed to update the row')
-        })
+        const userEmail = oldRow.email; // Get the email of the user being edited
+        axios
+            .put(`http://localhost:5000/users/${userEmail}`, updatedRow) // Use the email as the identifier
+            .then((response) => {
+                // Handle the response accordingly
+                // Update the user in the frontend, if required
+            })
+            .catch((error) => {
+                console.error(error);
+                alert('Failed to update the user');
+            });
     };
 
-    const onDeleteRow = (reportId, oldRow, oldRows) => {
-        // delete request
+// Delete user based on email
+const onDeleteRow = async (id, updatedRow, oldRow, oldRows) => {
+    console.log('Old Row:', oldRow); // Add this line for debugging
+    try {
+      if (oldRow && oldRow.email) {
+        const userEmail = oldRow.email;
+  
+        // Check if the email exists in the database
+        const response = await axios.get(`http://localhost:5000/user/${userEmail}`);
+        if (response.status !== 200) {
+          // The email does not exist
+          alert('Email not found or invalid');
+          return;
+        }
+  
+        // Delete the user
+        const deleteResponse = await axios.delete(`http://localhost:5000/user/${userEmail}`);
+        if (deleteResponse.status === 200) {
+          // The user was deleted successfully
+          const updatedRows = oldRows.filter((row) => row.id !== id);
+          setRows(updatedRows); // Assuming you have a state for rows
+        } else {
+          // The user could not be deleted
+          alert('Failed to delete user');
+        }
+      } else {
+        alert('Email not found or invalid');
+      }
+    } catch (error) {
+      // Catch the error and prevent it from being thrown
+      console.error(error);
+      // Do something else, like show a toast notification to the user
+    }
+  };
+  
 
-        fetch(`http:localhost:3001/deleteReport/${reportId}`,{
-            method: 'DELETE',
-        })
-        .then((response)=>{
-            //update the state of component in data grid
-            setRows(oldRows.filter((r) => r.reportId !== reportId))
-        })
-        .catch((err)=>{
-            //handling error
-            console.log(err)
-            alert('Failed to delete the row')
-        })
-        // sellerController
-        // .deleteRow(id)
-        // .then((res) => {
-        //     const dbRowId = res.data.id;
-        //     setRows(oldRows.filter((r) => r.id !== dbRowId));
-        // })
-        // .catch((err) => {
-        //     setRows(oldRows);
-        // });
-    };
+
+
+
+
+
 
 //   const createRowData = (rows) => {
 //     const newId = Math.max(...rows.map((r) => (r.id ? r.id : 0) * 1)) + 1;

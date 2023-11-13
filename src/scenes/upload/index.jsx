@@ -4,6 +4,10 @@ import * as yup from "yup"
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/header";
 import axios from "axios";
+import jwt from "jwt-decode";
+import { useCookies } from "react-cookie";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const initialValues = {
     // reportId: "",
@@ -82,7 +86,29 @@ const validateuserId = (userId) => {
 
 const Upload = ()=>{
     const isNonMobile = useMediaQuery("(min-width:600px)")
+    const [file, setFile] = useState()
     
+    const [cookies] = useCookies(["jwt"])
+    const [jwtToken, setJwtToken] = useState("")
+
+    useEffect(() => {
+        if(cookies.jwt){
+        const decodeToken = jwt(cookies.jwt)
+        const email = decodeToken.email
+        
+        setJwtToken(cookies.jwt)
+        
+        async function fetchAccountData(email){
+            try{
+            const response = await axios.get(`/account/${email}`,{})
+            } catch(error){
+            console.error("error fetching account data", error)
+            }
+        }
+        fetchAccountData(email)
+        }
+    }, [cookies])
+
     const handleFormSubmit = async ( values)=>{
         console.log("Image Data:", values.image); // Add this line
 
@@ -95,12 +121,15 @@ const Upload = ()=>{
             formData.append('location', values.location)
             formData.append('assignee', values.assignee)
             // // formData.append('priority', values.priority)
-            formData.append('image', values.image)
-            
+            formData.append('image', file)
+            console.log(file)
             const response = await axios.post("http://localhost:5000/report", formData,{
                 // set the content type for FormData
                 headers:{'Content-Type':'multipart/form-data'},
-            });
+            })
+            .then( res => {})
+            .catch(er => console.log(er))
+            ;
 
             if (response.status ===200){
                 //success
@@ -236,15 +265,16 @@ const Upload = ()=>{
                             <TextField
                                 fullWidth
                                 variant="filled"
-                                label="Image/File"
+                                // label="Image/File"
                                 InputProps={{
                                     type: 'file',
-                                    onChange: async (event) => {
-                                        const selectedFile = event.target.files[0];
-                                        if(selectedFile){
-                                            const base64 = await convertBase64(selectedFile);
-                                            setFieldValue("image", base64);
-                                        }
+                                    onChange: (event) => {
+                                        setFile(event.target.files[0])
+                                        // const selectedFile = event.target.files[0];
+                                        // if(selectedFile){
+                                        //     const base64 = await convertBase64(selectedFile);
+                                        //     setFieldValue("image", base64);
+                                        // }
                                     },
                                 }}
                                 error={!!touched.image && !!errors.image}

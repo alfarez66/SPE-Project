@@ -1,25 +1,29 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
+// import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import Checkbox from '@mui/material/Checkbox';
+// import Link from '@mui/material/Link';
+// import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+// import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from '../../api/axios';
 import { Formik } from 'formik';
-import { useMediaQuery } from '@mui/material';
+import { Grid, useMediaQuery } from '@mui/material';
+// import { useCookies } from 'react-cookie';
+import Cookies from "universal-cookie"
+import { Link, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-
 
 export default function SignIn() {
     const isNonMobile = useMediaQuery("(min-width:600px)")
-    const [cookies, setCookie] = useCookies()
+    // const cookies = new Cookies()
+    const navigate = useNavigate()
+    const [cookies,setCookie, removeCookie] = useCookies(["jwt"])
 
     const initialValues = {
         // reportId: "",
@@ -42,20 +46,34 @@ export default function SignIn() {
             formData.append('email', values.email)
             formData.append('password', values.password)
             
-            const response = await axios.post("http://localhost:5000/login", formData,{
+            const response = await axios.post("/login", formData,{
                 // set the content type for FormData
-                headers:{'Content-Type':'multipart/form-data'},
+                transformRequest : (data, headers) => {
+                    //headers.delete('Authorization')
+                    headers.setContentType('multipart/form-data')
+                    headers.setAccept('multipart/form-data')
+                    return data
+                }
+                
             });
     
-            const token = response.data.token
-            setCookie('jwt', token, {path:'/', HttpOnly:true, Secure: true})
-            
+            console.log("response ", response)
+
             if (response.status ===201){
                 //success
+                const token = response.data.token
+                setCookie('jwt', token, {path:'/',maxAge:24 * 60 * 60, HttpOnly:true, Secure: true})
+                // cookies.set("jwt", token,{
+                //     path:'/',
+                //     maxAge:24 * 60 * 60,
+                //     // expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+                //     secure:true,
+                // })
+
                 // console.log(document.cookie)
                 console.log("success")
                 console.log("Report details:", response.data)
-    
+                navigate("/");
             } else {
                 //error
                 console.error('Error',response.status)
@@ -116,7 +134,7 @@ return (
                             <TextField
                             fullWidth
                             variant="filled"
-                            type="text"
+                            type="password"
                             label="Password"
                             onBlur={handleBlur}
                             onChange={handleChange}
@@ -128,20 +146,19 @@ return (
                             />
 
                     </Box>
-                    <Box 
-                    display="flex" 
-                    justifyContent="end" 
-                    mt="20px" 
-                    >
-                        <Button 
-                        type="submit" 
-                        color="secondary" 
-                        variant="contained"
-                        fullWidth
-                        sx={{ mt: 3, mb: 2 }}
-                        >
+                    <Box display="flex" justifyContent="end" mt="20px">
+                        <Button type="submit" color="secondary" variant="contained" fullWidth sx={{ mt: 3, mb: 2 }}>
                             LOGIN
                         </Button>
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" mt={2}>
+                        <Typography variant="body2">
+                            Don't have an account?{' '}
+                            <Link to="/register" style={{ textDecoration: 'none' }}>
+                                Register here
+                            </Link>
+                        </Typography>
                     </Box>
                 </form>
             )}
